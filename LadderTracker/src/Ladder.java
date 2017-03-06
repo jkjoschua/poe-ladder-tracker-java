@@ -25,7 +25,7 @@ public class Ladder{
 	private boolean characterFound = false;		
 	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead;
 	private int httpWaitingTime = 10000;
-	private int interThreadStartTime = 1500;
+	private int interThreadStartTime = 2500;
 	
 	/**
 	 * Constructor of the Ladder object.
@@ -59,8 +59,8 @@ public class Ladder{
 						fullCSVSet.add(CSV1);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV1!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV1!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -82,8 +82,8 @@ public class Ladder{
 						fullCSVSet.add(CSV2);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV2!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV2!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -105,8 +105,8 @@ public class Ladder{
 						fullCSVSet.add(CSV3);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV3!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV3!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -128,8 +128,8 @@ public class Ladder{
 						fullCSVSet.add(CSV4);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV4!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV4!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -151,8 +151,8 @@ public class Ladder{
 						fullCSVSet.add(CSV5);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV5!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV5!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -174,8 +174,8 @@ public class Ladder{
 						fullCSVSet.add(CSV6);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV6!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV6!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {
@@ -197,8 +197,8 @@ public class Ladder{
 						fullCSVSet.add(CSV7);
 						finished = true;
 					} catch (Exception e) {
-						//System.out.println("Error downloading CSV7!");
-						//e.printStackTrace();
+						System.out.println("Error downloading CSV7!");
+						e.printStackTrace();
 					}
 					if(!finished){
 						try {

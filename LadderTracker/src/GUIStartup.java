@@ -61,7 +61,7 @@ public class GUIStartup{
 		windowStartUp.setBounds(100, 100, 300, 145);
 		windowStartUp.setLocation(dim.width/2-windowStartUp.getSize().width/2, dim.height/2-windowStartUp.getSize().height/2);
 		windowStartUp.setResizable(false);
-		windowStartUp.setTitle("Ladder Tracker v1.0");
+		windowStartUp.setTitle("Ladder Tracker v1.1");
 		windowStartUp.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowStartUp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowStartUp.getContentPane().setLayout(null);

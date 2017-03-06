@@ -27,7 +27,7 @@ public class GUILadderTracker{
 	private String leagueID, character, linkBase;
 	private boolean ladderUpdated = false;
 	private boolean ladderFirstUpdate = true;
-	private int ladderUpdateInterval = 11000;
+	private int ladderUpdateInterval = 300000;
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
 	/**
@@ -47,7 +47,7 @@ public class GUILadderTracker{
 		windowLadderTracker.setBounds(100, 100, 150, 85);
 		windowLadderTracker.setLocation(Integer.parseInt(prefs.get("LadderTrackerLocationX", Integer.toString(dim.width/2-windowLadderTracker.getSize().width/2))), Integer.parseInt(prefs.get("LadderTrackerLocationY", Integer.toString(dim.height/2-windowLadderTracker.getSize().height/2))));
 		windowLadderTracker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowLadderTracker.setTitle("Ladder Tracker v1.0");
+		windowLadderTracker.setTitle("Ladder Tracker v1.1");
 		windowLadderTracker.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowLadderTracker.setUndecorated(true);
 		windowLadderTracker.setAlwaysOnTop(true);
@@ -147,7 +147,7 @@ public class GUILadderTracker{
 								textRank.setText("updating...");
 								Thread.sleep(500);
 								counter++;
-								if(counter == 90){
+								if(counter == 500){
 									textDeathsAhead.setText("servers probably down");
 									textExpBehind.setText("check www.pathofexile.com");
 								}
@@ -213,6 +213,32 @@ public class GUILadderTracker{
 									showExpBehind = "  " + showExpBehind;
 								}	
 							}
+							
+							int dotsExpAhead = 0, dotsExpBehind = 0;
+							for(int i = 0; i < showExpAhead.length()-2; i++){
+								if (showExpAhead.substring(i+1, i+2).equals(".")){
+									dotsExpAhead = dotsExpAhead+1;
+								}		
+							}
+							for(int i = 0; i < showExpBehind.length()-2; i++){
+								if (showExpBehind.substring(i+1, i+2).equals(".")){
+									dotsExpBehind = dotsExpBehind+1;
+								}
+							}	
+							if(dotsExpAhead == dotsExpBehind){
+								// nothing
+							}				
+							else if(dotsExpBehind > dotsExpAhead){
+								for(int d = 0; d < dotsExpBehind-dotsExpAhead; d++){
+									showExpBehind = " " + showExpBehind;
+								}
+							}
+							else{
+								for(int d = 0; d < dotsExpAhead-dotsExpBehind; d++){
+									showExpBehind = " " + showExpBehind;
+								}
+							}
+							
 							break;
 						} catch (Exception e) {
 							e.printStackTrace();
