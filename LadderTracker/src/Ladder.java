@@ -1,5 +1,7 @@
 import java.io.PrintWriter;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,11 +23,13 @@ public class Ladder{
 	private String[] characterLevel = new String[14000];
 	private String[] characterExperience = new String[14000];
 	private String[] characterDead = new String[14000];
-	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead;
+	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead, characterSpecificExpPerHourReferenceLow = 0, characterSpecificExpPerHourReferenceHigh = 0;
+	private double characterSpecificProgress;
 	private boolean characterFound = false;		
 	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead;
-	private int httpWaitingTime = 10000;
-	private int interThreadStartTime = 2500;
+	private int httpWaitingTime = 5000;
+	private int interThreadStartTime = 1;
+	private int characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh;
 	
 	/**
 	 * Constructor of the Ladder object.
@@ -118,7 +122,7 @@ public class Ladder{
 				}
 			}
 		});
-		// thread definitionfor CSV file 4
+		// thread definition for CSV file 4
 		Thread T4 = new Thread(new Runnable(){
 			public void run(){
 				boolean finished = false;
@@ -164,7 +168,7 @@ public class Ladder{
 				}
 			}
 		});
-		// thread definitionfor CSV file 6
+		// thread definition for CSV file 6
 		Thread T6 = new Thread(new Runnable(){
 			public void run(){
 				boolean finished = false;
@@ -245,17 +249,17 @@ public class Ladder{
 	 * Fills the ladder with the CSV data.
 	 */
 	private void fill(){
-		CSVFile currenCSV;
+		CSVFile currentCSV;
 		for(int i = 1; i <= 7; i++){
-			currenCSV = fullCSVSet.poll();
-			addOnlineStatus(currenCSV.getListOnlineStatus(), currenCSV.getIndex());
-			addCharacterRank(currenCSV.getListRank(), currenCSV.getIndex());
-			addAccountName(currenCSV.getListAccount(), currenCSV.getIndex());
-			addCharacterName(currenCSV.getListCharacter(), currenCSV.getIndex());
-			addCharacterClass(currenCSV.getListClass(), currenCSV.getIndex());
-			addCharacterlevel(currenCSV.getListLevel(), currenCSV.getIndex());
-			addCharacterExperience(currenCSV.getListExperience(), currenCSV.getIndex());
-			addCharacterDead(currenCSV.getListDead(), currenCSV.getIndex());
+			currentCSV = fullCSVSet.poll();
+			addOnlineStatus(currentCSV.getListOnlineStatus(), currentCSV.getIndex());
+			addCharacterRank(currentCSV.getListRank(), currentCSV.getIndex());
+			addAccountName(currentCSV.getListAccount(), currentCSV.getIndex());
+			addCharacterName(currentCSV.getListCharacter(), currentCSV.getIndex());
+			addCharacterClass(currentCSV.getListClass(), currentCSV.getIndex());
+			addCharacterlevel(currentCSV.getListLevel(), currentCSV.getIndex());
+			addCharacterExperience(currentCSV.getListExperience(), currentCSV.getIndex());
+			addCharacterDead(currentCSV.getListDead(), currentCSV.getIndex());
 		}
 	}
 	/**
@@ -273,6 +277,8 @@ public class Ladder{
 			System.out.println("DeathsAhead : " + getDeathsAhead());
 			System.out.println("ExpBehind : " + getExpBehind());
 			System.out.println("ExpAhead : " + getExpAhead());
+			System.out.println("Progress : " + getProgress() + "%");
+			System.out.println("ExpPerHour : " + getExpPerHour());
 		}
 		else{
 			System.out.println("----------");
@@ -288,21 +294,24 @@ public class Ladder{
 		characterFound = false;
 		int ladderPos;
 		for(int i = 0; i < 14000; i++){
-			if(character.equals(characterName[i])){
+			if(character.equals(characterName[i])){				
 				ladderPos = i;
 				characterFound = true;
-				
-				if(characterDead[i].equals("Dead")){
-					for(int j = i+1; j < 14000; j++){
-						if(character.equals(characterName[j])){
-							ladderPos = j;
-							break;
-						}
-					}
-				}
 				characterSpecificRank = ladderPos+1;
 				characterSpecificClass = characterClass[ladderPos];
 				characterSpecificClassRank = 1;
+				characterSpecificProgress = ((double) Long.parseLong(characterExperience[ladderPos])/4250334444L)*100;
+				
+				if(characterSpecificExpPerHourReferenceLow == 0){
+					characterSpecificExpPerHourTimestampLow = (int) new Date().getTime();
+					characterSpecificExpPerHourReferenceLow = Long.parseLong(characterExperience[ladderPos]);
+					characterSpecificExpPerHourReferenceHigh = 0;
+				}
+				else{
+					characterSpecificExpPerHourReferenceHigh = Long.parseLong(characterExperience[ladderPos]);
+					characterSpecificExpPerHourTimestampHigh = (int) new Date().getTime();
+				}
+				
 				if(ladderPos == 0){
 					characterSpecificExperienceBehind = 0;
 				}
@@ -363,7 +372,11 @@ public class Ladder{
 						}
 					}
 				}
-				break;
+				if(characterDead[i].equals("Dead")){
+				}
+				else{
+					break;
+				}
 			}
 			if(!reqFound && characterName[i] == null){
 				if(i > 1){
@@ -453,6 +466,51 @@ public class Ladder{
 	 */
 	public String getRequiredExp(){
 		return reqExp;
+	}
+	/**
+	 * Returns the progress in percent to level 100.
+	 * 
+	 * @return The progress in percent to level 100.
+	 */
+	public String getProgress(){
+		DecimalFormat decimalFormat = new DecimalFormat("##0.00");
+		return decimalFormat.format(characterSpecificProgress);
+	}
+	/**
+	 * Returns the experience per hour.
+	 * 
+	 * @return The experience per hour as a string.
+	 */
+	public String getExpPerHour(){
+		if(characterSpecificExpPerHourReferenceLow == 0 || characterSpecificExpPerHourReferenceHigh == 0){
+			return "next update";
+		}
+		else{
+			long exp = characterSpecificExpPerHourReferenceHigh-characterSpecificExpPerHourReferenceLow;
+			int time = (characterSpecificExpPerHourTimestampHigh-characterSpecificExpPerHourTimestampLow)/1000;
+			int expPerHour = (int) (exp/time)*60*60;			
+			double tmp;
+			DecimalFormat decimalFormat = new DecimalFormat("##0.0");
+			
+			if(expPerHour < 999){
+				tmp = (double) expPerHour;
+				return  Integer.toString(expPerHour);
+			}
+			else if(expPerHour < 999999){
+				tmp = (double) expPerHour/1000;
+				return decimalFormat.format(tmp) + "K";
+			}
+			else{
+				tmp = (double) expPerHour/1000000;
+				return decimalFormat.format(tmp) + "M";
+			}
+		}
+	}
+	/**
+	 * Rests the reference point for the calculation of the experience per hour.
+	 */
+	public void resetExpHour(){
+		characterSpecificExpPerHourReferenceLow = 0;
 	}
 	/**
 	 * Adds the CSV information of the online status to the ladder.

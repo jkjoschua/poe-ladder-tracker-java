@@ -1,6 +1,7 @@
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -21,14 +22,17 @@ import java.awt.Dimension;
  */
 public class GUILadderTracker{
 	private JFrame windowLadderTracker;
-	private JTextArea textRank, textClass, textExpBehind, textExpAhead, textDeathsAhead, textLastUpdate;
+	private JTextArea textRank, textClass, textData1, textData2, textData3, textData4, textLastUpdate;
 	private JLabel labelDragAndDrop;
-	private String showRank = "", showClassRank = "", showClass = "", showExpBehind = "", showExpAhead = "", showDeathsAhead = ""; 
+	private String showRank = "", showClassRank = "", showClass = "", showExpBehind = "", showExpAhead = "", showDeathsAhead = "", showExpPerHour = ""; 
 	private String leagueID, character, linkBase;
-	private boolean ladderUpdated = false;
-	private boolean ladderFirstUpdate = true;
-	private int ladderUpdateInterval = 300000;
+	private boolean ladderUpdated = false, ladderFirstUpdate = true;
+	private boolean displayDeathsAhead, displayExpAhead, displayExpBehind, displayExpPerHour;
+	private int ladderUpdateInterval = 301000, windowLadderTrackerHeight = 85;
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+	private String prefTimestamp;
+	private boolean ladderRestExpHour = false;
+	Ladder ladder;
 
 	/**
 	 * Constructor of the GUILadderTracker object.
@@ -44,10 +48,10 @@ public class GUILadderTracker{
 		
 		// ladder tracker window
 		windowLadderTracker = new JFrame();
-		windowLadderTracker.setBounds(100, 100, 150, 85);
+		windowLadderTracker.setBounds(100, 100, 150, windowLadderTrackerHeight);
 		windowLadderTracker.setLocation(Integer.parseInt(prefs.get("LadderTrackerLocationX", Integer.toString(dim.width/2-windowLadderTracker.getSize().width/2))), Integer.parseInt(prefs.get("LadderTrackerLocationY", Integer.toString(dim.height/2-windowLadderTracker.getSize().height/2))));
 		windowLadderTracker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowLadderTracker.setTitle("Ladder Tracker v1.1");
+		windowLadderTracker.setTitle("Ladder Tracker v2.0");
 		windowLadderTracker.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowLadderTracker.setUndecorated(true);
 		windowLadderTracker.setAlwaysOnTop(true);
@@ -55,7 +59,7 @@ public class GUILadderTracker{
         
         // drag and drop label
         labelDragAndDrop = new JLabel("");
-        labelDragAndDrop.setBounds(0, 0, 150, 85);
+        labelDragAndDrop.setBounds(0, 0, 150, windowLadderTrackerHeight);
         FrameDragListener dragAndDropListener = new FrameDragListener();
         labelDragAndDrop.addMouseListener(dragAndDropListener);
         labelDragAndDrop.addMouseMotionListener(dragAndDropListener);
@@ -80,32 +84,41 @@ public class GUILadderTracker{
         textClass.setBounds(0, 20, 140, 24);
         windowLadderTracker.getContentPane().add(textClass);
         
-        // deaths ahead text
-        textDeathsAhead = new JTextArea();
-        textDeathsAhead.setText("");
-        textDeathsAhead.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
-        textDeathsAhead.setEditable(false);
-        textDeathsAhead.setBackground(SystemColor.menu);
-        textDeathsAhead.setBounds(0, 45, 140, 15);
-        windowLadderTracker.getContentPane().add(textDeathsAhead);
+        // data1 text
+        textData1 = new JTextArea();
+        textData1.setText("");
+        textData1.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData1.setEditable(false);
+        textData1.setBackground(SystemColor.menu);
+        textData1.setBounds(0, 45, 140, 15);
+        windowLadderTracker.getContentPane().add(textData1);
         
-        // exp behind text
-        textExpBehind = new JTextArea();
-        textExpBehind.setText("");
-        textExpBehind.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
-        textExpBehind.setEditable(false);
-        textExpBehind.setBackground(SystemColor.menu);
-        textExpBehind.setBounds(0, 57, 140, 15);
-        windowLadderTracker.getContentPane().add(textExpBehind);
+        // data2 text
+        textData2 = new JTextArea();
+        textData2.setText("");
+        textData2.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData2.setEditable(false);
+        textData2.setBackground(SystemColor.menu);
+        textData2.setBounds(0, 57, 140, 15);
+        windowLadderTracker.getContentPane().add(textData2);
         
-        // exp ahead text
-        textExpAhead = new JTextArea();
-        textExpAhead.setText("");
-        textExpAhead.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
-        textExpAhead.setEditable(false);
-        textExpAhead.setBackground(SystemColor.menu);
-        textExpAhead.setBounds(0, 69, 140, 15);
-        windowLadderTracker.getContentPane().add(textExpAhead);
+        // data3 text
+        textData3 = new JTextArea();
+        textData3.setText("");
+        textData3.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData3.setEditable(false);
+        textData3.setBackground(SystemColor.menu);
+        textData3.setBounds(0, 69, 140, 15);
+        windowLadderTracker.getContentPane().add(textData3);
+        
+        // data4 text
+        textData4 = new JTextArea();
+        textData4.setText("");
+        textData4.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData4.setEditable(false);
+        textData4.setBackground(SystemColor.menu);
+        textData4.setBounds(0, 81, 140, 15);
+        windowLadderTracker.getContentPane().add(textData4);
         
         // last update text
         textLastUpdate = new JTextArea();
@@ -127,7 +140,7 @@ public class GUILadderTracker{
 		Thread ThreadLadderTracker = new Thread(){
 			public void run(){
 				boolean counterON = false;
-				Ladder ladder;
+				//Ladder ladder;
 				
 				// thread definition of the updating window
 				Thread ThreadLadderFirstUpdating = new Thread(){
@@ -148,8 +161,8 @@ public class GUILadderTracker{
 								Thread.sleep(500);
 								counter++;
 								if(counter == 500){
-									textDeathsAhead.setText("servers probably down");
-									textExpBehind.setText("check www.pathofexile.com");
+									textData1.setText("servers probably down");
+									textData2.setText("check www.pathofexile.com");
 								}
 							} catch (InterruptedException e) {
 								e.printStackTrace();
@@ -180,8 +193,93 @@ public class GUILadderTracker{
 						e.printStackTrace();
 					}
 				}
+				
+				Thread ThreadLadderResetExpHour = new Thread(){
+					public void run(){
+						while(true){
+							if(ladderRestExpHour){
+								if(!showExpPerHour.equals("")){
+									ladderRestExpHour = false;
+									ladder.resetExpHour();
+									
+									// depending on the configuration
+									if(displayDeathsAhead){						
+										if(displayExpBehind){				
+											if(displayExpAhead){		
+												if(displayExpPerHour){
+													textData4.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+												}
+											}
+											else{
+												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+											}
+										}
+										else if(displayExpAhead){
+											if(displayExpPerHour){
+												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+											}
+										}
+										else{
+											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else if(displayExpBehind){
+										if(displayExpAhead){
+											if(displayExpPerHour){
+												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+											}
+										}
+										else{
+											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else if(displayExpAhead){
+										if(displayExpPerHour){
+											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else{
+										textData1.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+									}
+								}
+							}
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e){
+								e.printStackTrace();
+							}
+						}
+					}
+				};
+				
+				ThreadLadderResetExpHour.start();
+				
 				// infinite loop
 				while(true){
+					// check timestamp
+					prefTimestamp = prefs.get("LastUpdate", "0");
+					
+					if(Integer.parseInt(prefTimestamp) == 0){
+						textClass.setText("First start!");
+						textData1.setText("Takes around 320 secounds!");
+						prefs.put("LastUpdate", Integer.toString((int) new Date().getTime()));
+					}
+					prefTimestamp = prefs.get("LastUpdate", "0");
+					
+					int currentTime = (int) new Date().getTime();
+					@SuppressWarnings("unused")
+					int diff = currentTime-Integer.parseInt(prefTimestamp);
+					while(currentTime-Integer.parseInt(prefTimestamp) < 300000){
+						currentTime = (int) new Date().getTime();
+						diff = currentTime-Integer.parseInt(prefTimestamp);
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					prefs.put("LastUpdate", Integer.toString((int) new Date().getTime()));
+					
 					// ladder update 
 					while(true){			
 						try {
@@ -199,6 +297,7 @@ public class GUILadderTracker{
 							showDeathsAhead = Integer.toString(ladder.getDeathsAhead());
 							showExpBehind = stringAddDots(Long.toString(ladder.getExpBehind()));
 							showExpAhead = stringAddDots(Long.toString(ladder.getExpAhead()));
+							showExpPerHour = ladder.getExpPerHour();
 							
 							if(showExpAhead.length() == showExpBehind.length()){
 								
@@ -235,7 +334,7 @@ public class GUILadderTracker{
 							}
 							else{
 								for(int d = 0; d < dotsExpAhead-dotsExpBehind; d++){
-									showExpBehind = " " + showExpBehind;
+									showExpAhead = " " + showExpAhead;
 								}
 							}
 							
@@ -248,23 +347,77 @@ public class GUILadderTracker{
 					while(true){
 						try {
 							if(ladder.isCharacterFound()){
+								resetHeight();
+								// always
 								textRank.setText("Rank " + showRank);
 								textClass.setText(showClassRank + ". " + showClass);
-								textDeathsAhead.setText("DeathsAhead: " + showDeathsAhead);
-								textExpBehind.setText("ExpBehind: " + showExpBehind);
-								textExpAhead.setText("ExpAhead : " + showExpAhead);
-							}
-							else{
-								textRank.setText("Character");
-								textClass.setText("was not found!");
-								textDeathsAhead.setText("Requirements");
-								if(ladder.getRequiredLevel() == null){
-									textExpBehind.setText("Level: empty league");
-									textExpAhead.setText("Exp: empty league");		
+								
+								// depending on the configuration
+								if(displayDeathsAhead){
+									textData1.setText("DeathsAhead: " + showDeathsAhead);
+									
+									if(displayExpBehind){
+										textData2.setText("ExpBehind: " + showExpBehind);
+										
+										if(displayExpAhead){
+											textData3.setText("ExpAhead:  " + showExpAhead);
+											
+											if(displayExpPerHour){
+												textData4.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+											}
+										}
+										else{
+											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else if(displayExpAhead){
+										textData2.setText("ExpAhead: " + showExpAhead);
+										
+										if(displayExpPerHour){
+											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else{
+										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+									}
+								}
+								else if(displayExpBehind){
+									textData1.setText("ExpBehind: " + showExpBehind);
+									
+									if(displayExpAhead){
+										textData2.setText("ExpAhead:  " + showExpAhead);
+										
+										if(displayExpPerHour){
+											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+										}
+									}
+									else{
+										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+									}
+								}
+								else if(displayExpAhead){
+									textData1.setText("ExpAhead: " + showExpAhead);
+									
+									if(displayExpPerHour){
+										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+									}
 								}
 								else{
-									textExpBehind.setText("Level: " + ladder.getRequiredLevel());
-									textExpAhead.setText("Exp: " + stringAddDots(ladder.getRequiredExp()));			
+									textData1.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+								}
+							}
+							else{
+								resetHeight(85);
+								textRank.setText("Character");
+								textClass.setText("was not found!");
+								textData1.setText("Requirements");
+								if(ladder.getRequiredLevel() == null){
+									textData2.setText("Level: empty league");
+									textData3.setText("Exp: empty league");		
+								}
+								else{
+									textData2.setText("Level: " + ladder.getRequiredLevel());
+									textData3.setText("Exp: " + stringAddDots(ladder.getRequiredExp()));			
 								}
 							}
 							if(ladderUpdated){
@@ -300,12 +453,14 @@ public class GUILadderTracker{
 								ThreadCounter.start();
 								counterON = true;
 							}
+							
+							resetHeight();
 							sleep(ladderUpdateInterval);
 							break;
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-					}				
+					}
 				}
 			}
 		};
@@ -345,28 +500,96 @@ public class GUILadderTracker{
 		character = characterName;
 	}
 	/**
+	 * Sets the additional which should be shown.
+	 * 
+	 * @param deathsAhead - DeahtsAhead will be shown for true.
+	 * @param expAhead - ExpAhead will be shown for true.
+	 * @param expBehind - ExpBehind will be shown for true.
+	 * @param expPerHour - ExpPerHour will be shown for ture.
+	 */
+	public void setDisplayData(boolean deathsAhead, boolean expAhead, boolean expBehind, boolean expPerHour){
+		displayDeathsAhead = deathsAhead;
+		displayExpAhead = expAhead;
+		displayExpBehind = expBehind;
+		displayExpPerHour = expPerHour;
+	}
+	/**
+	 * Resets the height of the ladder tracker window.
+	 */
+	private void resetHeight(){
+		int multiplicator = 0;
+		
+		if(displayDeathsAhead){
+			multiplicator++;
+		}
+		if(displayExpAhead){
+			multiplicator++;
+		}
+		if(displayExpBehind){
+			multiplicator++;
+		}
+		if(displayExpPerHour){
+			multiplicator++;
+		}
+		windowLadderTrackerHeight = 45+12*multiplicator+4;
+		windowLadderTracker.setSize(150, windowLadderTrackerHeight);
+		labelDragAndDrop.setBounds(0, 0, 150, windowLadderTrackerHeight);
+	}
+	/**
+	 * Resets the height of the ladder tracker window.
+	 */
+	private void resetHeight(int height){
+		windowLadderTrackerHeight = height;
+		windowLadderTracker.setSize(150, windowLadderTrackerHeight);
+		labelDragAndDrop.setBounds(0, 0, 150, windowLadderTrackerHeight);
+	}
+	/**
 	 * The mouse adapter for the drag and drop label.
 	 * 
 	 * @author Joschn
 	 */
 	public class FrameDragListener extends MouseAdapter{
         private Point mouseDownCompCoords = null;
+        private boolean rightMouseButtonPressed = false;
+        private int timestampLow = 0, timestampHigh = 0;
 
         public FrameDragListener(){
         }
         public void mouseReleased(MouseEvent e){
-            mouseDownCompCoords = null;
+        	if(rightMouseButtonPressed){
+		        mouseDownCompCoords = null;
+		        rightMouseButtonPressed = false;
+        	}
         }
         public void mousePressed(MouseEvent e){
         	if(!SwingUtilities.isRightMouseButton(e)){
         		mouseDownCompCoords = e.getPoint();
+        		rightMouseButtonPressed = true;
+        	}
+        	if(SwingUtilities.isRightMouseButton(e)){
+        		if(timestampLow == 0){
+        			timestampLow = (int) new Date().getTime();
+        		}
+        		else if(timestampHigh == 0){
+        			timestampHigh = (int) new Date().getTime();
+        		}
+        		else{
+        			timestampLow = timestampHigh;
+        			timestampHigh = (int) new Date().getTime();
+        		}
+        		
+				if(timestampHigh - timestampLow < 350){
+					ladderRestExpHour = true;
+				}
         	}
         }
         public void mouseDragged(MouseEvent e){
-            Point currCoords = e.getLocationOnScreen();
-            windowLadderTracker.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
-            prefs.put("LadderTrackerLocationX", Integer.toString(currCoords.x - mouseDownCompCoords.x));
-            prefs.put("LadderTrackerLocationY", Integer.toString(currCoords.y - mouseDownCompCoords.y));
+        	if(rightMouseButtonPressed){
+		        Point currCoords = e.getLocationOnScreen();
+		        windowLadderTracker.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
+		        prefs.put("LadderTrackerLocationX", Integer.toString(currCoords.x - mouseDownCompCoords.x));
+		        prefs.put("LadderTrackerLocationY", Integer.toString(currCoords.y - mouseDownCompCoords.y));
+        	}
         }
     }
 }

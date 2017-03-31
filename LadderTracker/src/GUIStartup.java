@@ -19,6 +19,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JCheckBox;
 
 /**
  * The GUIStartup object contains the first GUI that is shown if no error occurs.
@@ -29,7 +30,7 @@ public class GUIStartup{
 	private JFrame windowStartUp;
 	private JComboBox<String> comboBox;
 	private JTextField textField;
-	private JTextPane textLeague, textCharacter;
+	private JTextPane textLeague, textCharacter, textDisplayAlso;
 	private JButton buttonStart;
 	private String[] comboBoxContent, leagueID;
 	private String selectedLeagueID, characterName, prefCharacterName, prefComboBoxSelectedItem;
@@ -37,8 +38,11 @@ public class GUIStartup{
 	private TextFieldListener textFieldListener = new TextFieldListener();
 	private TextFieldKeyListener textFieldKeyListener = new TextFieldKeyListener();
 	private ButtonStartListener buttonStartListener = new ButtonStartListener();
+	private CheckboxListener checkboxListener = new CheckboxListener();
 	private GUILadderTracker windowLadderTracker;
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+	private JCheckBox checkboxExpBehind, checkboxExpAhead, checkboxExpPerHour, checkboxDeathsAhead;
+	private Boolean displayExpBehind, displayExpAhead, displayExpPerHour, displayDeathsAhead;
 
 	/**
 	 * Constructor of the GUIStartup object.
@@ -58,10 +62,10 @@ public class GUIStartup{
 
 		// start up window
 		windowStartUp = new JFrame();	
-		windowStartUp.setBounds(100, 100, 300, 145);
+		windowStartUp.setBounds(100, 100, 300, 188);
 		windowStartUp.setLocation(dim.width/2-windowStartUp.getSize().width/2, dim.height/2-windowStartUp.getSize().height/2);
 		windowStartUp.setResizable(false);
-		windowStartUp.setTitle("Ladder Tracker v1.1");
+		windowStartUp.setTitle("Ladder Tracker v2.0");
 		windowStartUp.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowStartUp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowStartUp.getContentPane().setLayout(null);
@@ -132,15 +136,56 @@ public class GUIStartup{
 
 		// button start
 		buttonStart = new JButton("Start");
-		buttonStart.setBounds(10, 80, 274, 23);
+		buttonStart.setBounds(10, 130, 274, 23);
 		buttonStart.addActionListener(buttonStartListener);
 		windowStartUp.getContentPane().add(buttonStart);
+		
+		// text DisplayAlso
+		textDisplayAlso = new JTextPane();
+		textDisplayAlso.setText("Display also:");
+		textDisplayAlso.setEditable(false);
+		textDisplayAlso.setBackground(SystemColor.menu);
+		textDisplayAlso.setBounds(10, 75, 66, 20);
+		windowStartUp.getContentPane().add(textDisplayAlso);
+		
+		// checkbox DeathsAhead
+		checkboxDeathsAhead = new JCheckBox("DeahtsAhead");
+		checkboxDeathsAhead.setBounds(74, 74, 97, 23);
+		displayDeathsAhead = Boolean.valueOf(prefs.get("checkboxDeathsAhead", "true"));
+		checkboxDeathsAhead.setSelected(displayDeathsAhead);
+		checkboxDeathsAhead.addActionListener(checkboxListener);
+		windowStartUp.getContentPane().add(checkboxDeathsAhead);
+		
+		// checkbox ExpBehind
+		checkboxExpBehind = new JCheckBox("ExpBehind");
+		checkboxExpBehind.setBounds(187, 74, 97, 23);
+		displayExpBehind = Boolean.valueOf(prefs.get("checkboxExpBehind", "true"));
+		checkboxExpBehind.setSelected(displayExpBehind);
+		checkboxExpBehind.addActionListener(checkboxListener);
+		windowStartUp.getContentPane().add(checkboxExpBehind);
+		
+		// checkbox ExpAhead
+		checkboxExpAhead = new JCheckBox("ExpAhead");
+		checkboxExpAhead.setBounds(187, 100, 97, 23);
+		displayExpAhead = Boolean.valueOf(prefs.get("checkboxExpAhead", "true"));
+		checkboxExpAhead.setSelected(displayExpAhead);
+		checkboxExpAhead.addActionListener(checkboxListener);
+		windowStartUp.getContentPane().add(checkboxExpAhead);
+		
+		// checkbox ExpPerHour
+		checkboxExpPerHour = new JCheckBox("Exp/h + Progress");
+		checkboxExpPerHour.setBounds(74, 100, 109, 23);
+		displayExpPerHour = Boolean.valueOf(prefs.get("checkboxExpPerHour", "true"));
+		checkboxExpPerHour.setSelected(displayExpPerHour);
+		checkboxExpPerHour.addActionListener(checkboxListener);
+		windowStartUp.getContentPane().add(checkboxExpPerHour);
 	}
 	/**
 	 * Starts the ladder tracker process.
 	 */
 	private void ladderTrackerStart(){
 		windowLadderTracker = new GUILadderTracker();
+		windowLadderTracker.setDisplayData(displayDeathsAhead, displayExpAhead, displayExpBehind, displayExpPerHour);
 		windowLadderTracker.setCharacter(characterName);
 		windowLadderTracker.setleagueID(selectedLeagueID);
 		windowStartUp.dispose();
@@ -201,6 +246,44 @@ public class GUIStartup{
 		}
 	};
 	/**
+	 * Action listener for the checkboxes.
+	 * 
+	 * @author Joschn
+	 */
+	private class CheckboxListener implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+			if(checkboxDeathsAhead.isSelected()){
+				displayDeathsAhead = true;
+			}
+			else{
+				displayDeathsAhead = false;
+			}
+			if(checkboxExpAhead.isSelected()){
+				displayExpAhead = true;
+			}
+			else{
+				displayExpAhead = false;
+			}
+			if(checkboxExpBehind.isSelected()){
+				displayExpBehind = true;
+			}
+			else{
+				displayExpBehind = false;
+			}
+			if(checkboxExpPerHour.isSelected()){
+				displayExpPerHour = true;
+			}
+			else{
+				displayExpPerHour = false;
+			}
+			
+			prefs.put("checkboxDeathsAhead", String.valueOf(displayDeathsAhead));
+			prefs.put("checkboxExpAhead", String.valueOf(displayExpAhead));
+			prefs.put("checkboxExpBehind", String.valueOf(displayExpBehind));
+			prefs.put("checkboxExpPerHour", String.valueOf(displayExpPerHour));
+		}
+	};
+	/**
 	 * Key listener for the text field.
 	 * 
 	 * @author Joschn
@@ -215,5 +298,5 @@ public class GUIStartup{
 		}
 		public void keyReleased(KeyEvent e) {
 		}
-	};
+	}
 }
