@@ -1,6 +1,6 @@
 # Path of Exile Ladder Tracker [Java]
 
-This Ladder Tracker is implemented in java and it shows your current character rank in a ladder with some other usefull information. The best thing is that this tool is very userfiendly and you don't have to touch any source code at all. A small graphical user interface will guide you through the "setup" of your specific league and character. By the way, races work as well! Since the league/race ladder information is based on the CSV files, which are available in the specific forum thread of the league/race, only the first 14.000 characters are covered. The update cycle of the tool is in the range of 28-60 secounds. Because of some http errors that could might occur a fixed update rate is not possible.
+This Ladder Tracker is implemented in java and it shows your current character rank in a ladder with some other usefull information. The best thing is that this tool is very userfiendly and you don't have to touch any source code at all. A small graphical user interface will guide you through the "setup" of your specific league and character. By the way, races work as well! Since the league/race ladder information is based on the CSV files, which are available in the specific forum thread of the league/race, only the first 14.000 characters are covered. The update cycle of the tool is in the range of 320 secounds. Because of some http errors that could might occur a fixed update rate is not possible.
 
 ![Picture](http://fs5.directupload.net/images/170221/y5pe7pty.png)
 
