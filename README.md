@@ -8,5 +8,11 @@ This Ladder Tracker is implemented in java and it shows your current character r
 
 A Java Runtime Environment has to be installed (Java 8 Update 121 was used for testing).
 
+# Installation
+
+Go to the following link and select a version to install, download the appropriate ".jar" file. Once the .jar has downloaded, run the file and follow the instructions on screen.
+
+[Installer download](https://github.com/jkjoschua/poe-ladder-tracker-java/releases)
+
 --
 If you wanna support me and the project feel free to **[donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3P9CR54FJDR8J)**.
