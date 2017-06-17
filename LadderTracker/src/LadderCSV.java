@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 
  * @author Joschn
  */
-public class Ladder{
+public class LadderCSV{
 	Queue<CSVFile> fullCSVSet = new ConcurrentLinkedQueue<CSVFile>();
 	private CSVFile CSV1, CSV2, CSV3, CSV4, CSV5, CSV6, CSV7;
 	private String csvLink, character, characterSpecificClass, reqLevel, reqExp;
@@ -27,7 +27,7 @@ public class Ladder{
 	private double characterSpecificProgress;
 	private boolean characterFound = false;		
 	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead;
-	private int httpWaitingTime = 5000;
+	private int httpWaitingTime = 300000;
 	private int interThreadStartTime = 1;
 	private int characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh;
 	
@@ -38,7 +38,7 @@ public class Ladder{
 	 * @param initialCharacterName - The character name of interest.
 	 * @throws Exception If there is an error.
 	 */
-	public Ladder(String initialCSVLinkBase, String initialCharacterName) throws Exception{
+	public LadderCSV(String initialCSVLinkBase, String initialCharacterName) throws Exception{
 		csvLink = initialCSVLinkBase;
 		character = initialCharacterName;	
 		CSV1 = new CSVFile(new URL(csvLink + "1"), 1);

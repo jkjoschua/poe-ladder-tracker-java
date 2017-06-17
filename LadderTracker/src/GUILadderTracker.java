@@ -32,12 +32,18 @@ public class GUILadderTracker{
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private String prefTimestamp;
 	private boolean ladderRestExpHour = false;
-	Ladder ladder;
+	private boolean ladderModeCSV = true;
+	private LadderCSV ladderCSV;
+	private LadderAPI ladderAPI;
+	private String leagName;
 
 	/**
 	 * Constructor of the GUILadderTracker object.
 	 */
-	public GUILadderTracker() {
+	public GUILadderTracker(String initialLeagName, boolean initialMode) {
+		ladderModeCSV = initialMode;
+		leagName = initialLeagName;
+		leagName = leagName.replace(" ", "%20");
 		initialize();
 	}
 	/**
@@ -51,7 +57,7 @@ public class GUILadderTracker{
 		windowLadderTracker.setBounds(100, 100, 150, windowLadderTrackerHeight);
 		windowLadderTracker.setLocation(Integer.parseInt(prefs.get("LadderTrackerLocationX", Integer.toString(dim.width/2-windowLadderTracker.getSize().width/2))), Integer.parseInt(prefs.get("LadderTrackerLocationY", Integer.toString(dim.height/2-windowLadderTracker.getSize().height/2))));
 		windowLadderTracker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowLadderTracker.setTitle("Ladder Tracker v2.0");
+		windowLadderTracker.setTitle("Ladder Tracker v2.1");
 		windowLadderTracker.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowLadderTracker.setUndecorated(true);
 		windowLadderTracker.setAlwaysOnTop(true);
@@ -173,25 +179,30 @@ public class GUILadderTracker{
 				// start thread
 				ThreadLadderFirstUpdating.start();
 				
-				// create csv link (only once)
-				while(true){	
-					try {
-						CSVLinkCreator csvLink = new CSVLinkCreator(leagueID);
-						csvLink.create();
-						linkBase = csvLink.getCSVFileLink();
-						break;
-					} catch (Exception e) {
-						e.printStackTrace();
+				if(ladderModeCSV){
+					// create csv link (only once)
+					while(true){	
+						try {
+							CSVLinkCreator csvLink = new CSVLinkCreator(leagueID);
+							csvLink.create();
+							linkBase = csvLink.getCSVFileLink();
+							break;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					// initialize ladder (only once)
+					while(true){
+						try {
+							ladderCSV = new LadderCSV(linkBase, character);
+							break;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
-				// initialize ladder (only once)
-				while(true){
-					try {
-						ladder = new Ladder(linkBase, character);
-						break;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				else{
+					ladderAPI = new LadderAPI(character, leagName);
 				}
 				
 				Thread ThreadLadderResetExpHour = new Thread(){
@@ -199,47 +210,95 @@ public class GUILadderTracker{
 						while(true){
 							if(ladderRestExpHour){
 								if(!showExpPerHour.equals("")){
-									ladderRestExpHour = false;
-									ladder.resetExpHour();
 									
-									// depending on the configuration
-									if(displayDeathsAhead){						
-										if(displayExpBehind){				
-											if(displayExpAhead){		
+									if(ladderModeCSV){
+										ladderRestExpHour = false;
+										ladderCSV.resetExpHour();
+										
+										// depending on the configuration
+										if(displayDeathsAhead){						
+											if(displayExpBehind){				
+												if(displayExpAhead){		
+													if(displayExpPerHour){
+														textData4.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
+													}
+												}
+												else{
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
+												}
+											}
+											else if(displayExpAhead){
 												if(displayExpPerHour){
-													textData4.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
 												}
 											}
 											else{
-												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
+											}
+										}
+										else if(displayExpBehind){
+											if(displayExpAhead){
+												if(displayExpPerHour){
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
+												}
+											}
+											else{
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
 											}
 										}
 										else if(displayExpAhead){
 											if(displayExpPerHour){
-												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
 											}
 										}
 										else{
-											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
-										}
-									}
-									else if(displayExpBehind){
-										if(displayExpAhead){
-											if(displayExpPerHour){
-												textData3.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
-											}
-										}
-										else{
-											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
-										}
-									}
-									else if(displayExpAhead){
-										if(displayExpPerHour){
-											textData2.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+											textData1.setText("Exp/h : " + "reset" + " " + "(" + ladderCSV.getProgress() + "%)");
 										}
 									}
 									else{
-										textData1.setText("Exp/h : " + "reset" + " " + "(" + ladder.getProgress() + "%)");
+										ladderRestExpHour = false;
+										ladderAPI.resetExpHour();
+										
+										// depending on the configuration
+										if(displayDeathsAhead){						
+											if(displayExpBehind){				
+												if(displayExpAhead){		
+													if(displayExpPerHour){
+														textData4.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+													}
+												}
+												else{
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+												}
+											}
+											else if(displayExpAhead){
+												if(displayExpPerHour){
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+												}
+											}
+											else{
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else if(displayExpBehind){
+											if(displayExpAhead){
+												if(displayExpPerHour){
+													textData3.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+												}
+											}
+											else{
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else if(displayExpAhead){
+											if(displayExpPerHour){
+												textData2.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else{
+											textData1.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
+										}
+										
 									}
 								}
 							}
@@ -257,47 +316,69 @@ public class GUILadderTracker{
 				// infinite loop
 				while(true){
 					// check timestamp
-					prefTimestamp = prefs.get("LastUpdate", "0");
-					
-					if(Integer.parseInt(prefTimestamp) == 0){
-						textClass.setText("First start!");
-						textData1.setText("Takes around 320 secounds!");
+					if(ladderModeCSV){
+						prefTimestamp = prefs.get("LastUpdate", "0");
+						
+						if(Integer.parseInt(prefTimestamp) == 0){
+							textClass.setText("First start!");
+							textData1.setText("Takes around 320 secounds!");
+							prefs.put("LastUpdate", Integer.toString((int) new Date().getTime()));
+						}
+						prefTimestamp = prefs.get("LastUpdate", "0");
+						
+						int currentTime = (int) new Date().getTime();
+						@SuppressWarnings("unused")
+						int diff = currentTime-Integer.parseInt(prefTimestamp);
+						while(currentTime-Integer.parseInt(prefTimestamp) < 300000){
+							currentTime = (int) new Date().getTime();
+							diff = currentTime-Integer.parseInt(prefTimestamp);
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
 						prefs.put("LastUpdate", Integer.toString((int) new Date().getTime()));
 					}
-					prefTimestamp = prefs.get("LastUpdate", "0");
-					
-					int currentTime = (int) new Date().getTime();
-					@SuppressWarnings("unused")
-					int diff = currentTime-Integer.parseInt(prefTimestamp);
-					while(currentTime-Integer.parseInt(prefTimestamp) < 300000){
-						currentTime = (int) new Date().getTime();
-						diff = currentTime-Integer.parseInt(prefTimestamp);
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					prefs.put("LastUpdate", Integer.toString((int) new Date().getTime()));
 					
 					// ladder update 
 					while(true){			
 						try {
-							ladder.update();
-							
-							// wait until the first ladder update is done
-							if(ladderFirstUpdate){
-								ladderFirstUpdate = false;
+							if(ladderModeCSV){
+								ladderCSV.update();
+								
+								// wait until the first ladder update is done
+								if(ladderFirstUpdate){
+									ladderFirstUpdate = false;
+								}
+								ThreadLadderFirstUpdating.join();
+	
+								showRank = Integer.toString(ladderCSV.getRank());
+								showClassRank = Integer.toString(ladderCSV.getClassRank());
+								showClass = ladderCSV.getClassName();
+								showDeathsAhead = Integer.toString(ladderCSV.getDeathsAhead());
+								showExpBehind = stringAddDots(Long.toString(ladderCSV.getExpBehind()));
+								showExpAhead = stringAddDots(Long.toString(ladderCSV.getExpAhead()));
+								showExpPerHour = ladderCSV.getExpPerHour();
 							}
-							ThreadLadderFirstUpdating.join();
-
-							showRank = Integer.toString(ladder.getRank());
-							showClassRank = Integer.toString(ladder.getClassRank());
-							showClass = ladder.getClassName();
-							showDeathsAhead = Integer.toString(ladder.getDeathsAhead());
-							showExpBehind = stringAddDots(Long.toString(ladder.getExpBehind()));
-							showExpAhead = stringAddDots(Long.toString(ladder.getExpAhead()));
-							showExpPerHour = ladder.getExpPerHour();
+							else{
+								ladderAPI.update();
+								
+								// wait until the first ladder update is done
+								if(ladderFirstUpdate){
+									ladderFirstUpdate = false;
+								}
+								ThreadLadderFirstUpdating.join();
+	
+								showRank = Integer.toString(ladderAPI.getRank());
+								showClassRank = Integer.toString(ladderAPI.getClassRank());
+								showClass = ladderAPI.getClassName();
+								showDeathsAhead = Integer.toString(ladderAPI.getDeathsAhead());
+								showExpBehind = stringAddDots(Long.toString(ladderAPI.getExpBehind()));
+								showExpAhead = stringAddDots(Long.toString(ladderAPI.getExpAhead()));
+								showExpPerHour = ladderAPI.getExpPerHour();
+								
+							}
 							
 							if(showExpAhead.length() == showExpBehind.length()){
 								
@@ -346,78 +427,156 @@ public class GUILadderTracker{
 					// ladder tracker window update
 					while(true){
 						try {
-							if(ladder.isCharacterFound()){
-								resetHeight();
-								// always
-								textRank.setText("Rank " + showRank);
-								textClass.setText(showClassRank + ". " + showClass);
-								
-								// depending on the configuration
-								if(displayDeathsAhead){
-									textData1.setText("DeathsAhead: " + showDeathsAhead);
+							if(ladderModeCSV){
+								if(ladderCSV.isCharacterFound()){
+									resetHeight();
+									// always
+									textRank.setText("Rank " + showRank);
+									textClass.setText(showClassRank + ". " + showClass);
 									
-									if(displayExpBehind){
-										textData2.setText("ExpBehind: " + showExpBehind);
+									// depending on the configuration
+									if(displayDeathsAhead){
+										textData1.setText("DeathsAhead: " + showDeathsAhead);
 										
-										if(displayExpAhead){
-											textData3.setText("ExpAhead:  " + showExpAhead);
+										if(displayExpBehind){
+											textData2.setText("ExpBehind: " + showExpBehind);
+											
+											if(displayExpAhead){
+												textData3.setText("ExpAhead:  " + showExpAhead);
+												
+												if(displayExpPerHour){
+													textData4.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
+												}
+											}
+											else{
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
+											}
+										}
+										else if(displayExpAhead){
+											textData2.setText("ExpAhead: " + showExpAhead);
 											
 											if(displayExpPerHour){
-												textData4.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
 											}
 										}
 										else{
-											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
+										}
+									}
+									else if(displayExpBehind){
+										textData1.setText("ExpBehind: " + showExpBehind);
+										
+										if(displayExpAhead){
+											textData2.setText("ExpAhead:  " + showExpAhead);
+											
+											if(displayExpPerHour){
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
+											}
+										}
+										else{
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
 										}
 									}
 									else if(displayExpAhead){
-										textData2.setText("ExpAhead: " + showExpAhead);
+										textData1.setText("ExpAhead: " + showExpAhead);
 										
 										if(displayExpPerHour){
-											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
 										}
 									}
 									else{
-										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
-									}
-								}
-								else if(displayExpBehind){
-									textData1.setText("ExpBehind: " + showExpBehind);
-									
-									if(displayExpAhead){
-										textData2.setText("ExpAhead:  " + showExpAhead);
-										
-										if(displayExpPerHour){
-											textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
-										}
-									}
-									else{
-										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
-									}
-								}
-								else if(displayExpAhead){
-									textData1.setText("ExpAhead: " + showExpAhead);
-									
-									if(displayExpPerHour){
-										textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+										textData1.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderCSV.getProgress() + "%)");
 									}
 								}
 								else{
-									textData1.setText("Exp/h : " + showExpPerHour + " " + "(" + ladder.getProgress() + "%)");
+									resetHeight(85);
+									textRank.setText("Character");
+									textClass.setText("was not found!");
+									textData1.setText("Requirements");
+									if(ladderCSV.getRequiredLevel() == null){
+										textData2.setText("Level: empty league");
+										textData3.setText("Exp: empty league");		
+									}
+									else{
+										textData2.setText("Level: " + ladderCSV.getRequiredLevel());
+										textData3.setText("Exp: " + stringAddDots(ladderCSV.getRequiredExp()));			
+									}
 								}
 							}
 							else{
-								resetHeight(85);
-								textRank.setText("Character");
-								textClass.setText("was not found!");
-								textData1.setText("Requirements");
-								if(ladder.getRequiredLevel() == null){
-									textData2.setText("Level: empty league");
-									textData3.setText("Exp: empty league");		
+								if(ladderAPI.isCharacterFound()){
+									resetHeight();
+									// always
+									textRank.setText("Rank " + showRank);
+									textClass.setText(showClassRank + ". " + showClass);
+									
+									// depending on the configuration
+									if(displayDeathsAhead){
+										textData1.setText("DeathsAhead: " + showDeathsAhead);
+										
+										if(displayExpBehind){
+											textData2.setText("ExpBehind: " + showExpBehind);
+											
+											if(displayExpAhead){
+												textData3.setText("ExpAhead:  " + showExpAhead);
+												
+												if(displayExpPerHour){
+													textData4.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+												}
+											}
+											else{
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else if(displayExpAhead){
+											textData2.setText("ExpAhead: " + showExpAhead);
+											
+											if(displayExpPerHour){
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else{
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+										}
+									}
+									else if(displayExpBehind){
+										textData1.setText("ExpBehind: " + showExpBehind);
+										
+										if(displayExpAhead){
+											textData2.setText("ExpAhead:  " + showExpAhead);
+											
+											if(displayExpPerHour){
+												textData3.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+											}
+										}
+										else{
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+										}
+									}
+									else if(displayExpAhead){
+										textData1.setText("ExpAhead: " + showExpAhead);
+										
+										if(displayExpPerHour){
+											textData2.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+										}
+									}
+									else{
+										textData1.setText("Exp/h : " + showExpPerHour + " " + "(" + ladderAPI.getProgress() + "%)");
+									}
 								}
 								else{
-									textData2.setText("Level: " + ladder.getRequiredLevel());
-									textData3.setText("Exp: " + stringAddDots(ladder.getRequiredExp()));			
+									resetHeight(85);
+									textRank.setText("Character");
+									textClass.setText("was not found!");
+									textData1.setText("Requirements");
+									if(ladderAPI.getRequiredLevel() == null){
+										textData2.setText("Level: empty league");
+										textData3.setText("Exp: empty league");		
+									}
+									else{
+										textData2.setText("Level: " + ladderAPI.getRequiredLevel());
+										textData3.setText("Exp: " + stringAddDots(ladderAPI.getRequiredExp()));			
+									}
 								}
 							}
 							if(ladderUpdated){
@@ -454,8 +613,13 @@ public class GUILadderTracker{
 								counterON = true;
 							}
 							
-							resetHeight();
-							sleep(ladderUpdateInterval);
+							// resetHeight();
+							if(ladderModeCSV){
+								sleep(ladderUpdateInterval);
+							}
+							else{
+								sleep(3000);
+							}
 							break;
 						} catch (InterruptedException e) {
 							e.printStackTrace();

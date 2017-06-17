@@ -15,7 +15,7 @@ public class CSVLinkCreator{
 	private String forumThreadLink;
 	private String csvFileLink;
 	private String xPath = "//a[@class='exportCsv button1']";
-	private int waitForJavaScript = 5000;
+	private int waitForJavaScript = 60000;
 	
 	/**
 	 * Constructor for the CSVLinkCreator object.

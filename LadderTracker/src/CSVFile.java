@@ -39,7 +39,9 @@ public class CSVFile{
 	 * @throws Exception If there is an error while downloading.
 	 */
 	private void download() throws Exception{
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();		
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setConnectTimeout(60000);
+		
 		InputStream inputStream = connection.getInputStream();
 		
 		InputStreamReader inputStreamReader = null;

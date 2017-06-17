@@ -1,3 +1,4 @@
+import java.net.ServerSocket;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -8,6 +9,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
  */
 public class Runner{
 	private GUIStartup guiStartup;
+	private ServerSocket ss;
 	
 	/**
 	 * Constructor for the Runner object.
@@ -35,7 +37,28 @@ public class Runner{
 	 * Starts the program.
 	 */
 	private void start(){
+		singleInstanceCheck();
 		guiStartup = new GUIStartup();
 		guiStartup.show();
+	}
+	/**
+	 * Check if there is already one instance of the program running.
+	 */
+	private void singleInstanceCheck(){
+		try {
+			ss = new ServerSocket(61236);
+		} catch (Exception e) {
+			System.exit(-1);
+		}
+	}
+	/**
+	 * Resets the ServerSocket.
+	 */
+	protected void finalize(){
+		try{
+			ss.close();
+		} catch (Exception e){
+		    System.exit(-1);
+		}
 	}
 }
