@@ -11,7 +11,7 @@ import java.util.Date;
 public class LadderAPI{
 	private String[] characterRank = new String[14000], characterName = new String[14000], characterClass = new String[14000], characterExperience = new String[14000], characterDead = new String[14000], characterLevel = new String[14000];
 	private String character, characterSpecificClass, reqLevel, reqExp;
-	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead, characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh, timeoutHTTPConnection = 60000;
+	private int characterSpecificRank = 99999, characterSpecificClassRank, characterSpecificDeathsAhead, characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh, timeoutHTTPConnection = 60000;
 	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead, characterSpecificExpPerHourReferenceLow = 0, characterSpecificExpPerHourReferenceHigh = 0;
 	private double characterSpecificProgress;
 	private boolean characterFound = false, characterFoundExtern = false;
@@ -25,6 +25,7 @@ public class LadderAPI{
 
 		characterFound = false;
 		characterFoundExtern = false;
+		characterSpecificRank = 99999;
 		
 		LadderDownloadThread T0 = new LadderDownloadThread(0, leagName);
 		LadderDownloadThread T1 = new LadderDownloadThread(1, leagName);
@@ -131,7 +132,7 @@ public class LadderAPI{
 	}
 	private void searchCharacter(String name, int start, int end){
 		for(int x = start; x < end; x++){
-			if(characterName[x].equals(name)){
+			if(characterName[x].equals(name) && (x+1 < characterSpecificRank)){
 				characterFound = true;
 				characterSpecificRank = x+1;
 			}

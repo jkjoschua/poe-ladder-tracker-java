@@ -37,7 +37,7 @@ public class GUIError{
 		windowError.setBounds(100, 100, 300, 145);
 		windowError.setLocation(dim.width/2-windowError.getSize().width/2, dim.height/2-windowError.getSize().height/2);
 		windowError.setResizable(false);
-		windowError.setTitle("Ladder Tracker v2.2");
+		windowError.setTitle("Ladder Tracker v2.3");
 		windowError.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowError.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowError.getContentPane().setLayout(null);
