@@ -7,13 +7,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import java.awt.Font;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import javax.swing.JLabel;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.Color;
 
 /**
  * The GUILadderTracker object handles the ladder tracker window.
@@ -22,7 +21,7 @@ import java.awt.Dimension;
  */
 public class GUILadderTracker{
 	private JFrame windowLadderTracker;
-	private JTextArea textRank, textClass, textData1, textData2, textData3, textData4, textLastUpdate;
+	private JTextArea textRank, textClass, textData1, textData2, textData3, textData4, textLastUpdate, textBackgroundColor;
 	private JLabel labelDragAndDrop;
 	private String showRank = "", showClassRank = "", showClass = "", showExpBehind = "", showExpAhead = "", showDeathsAhead = "", showExpPerHour = ""; 
 	private String leagueID, character, linkBase;
@@ -36,14 +35,20 @@ public class GUILadderTracker{
 	private LadderCSV ladderCSV;
 	private LadderAPI ladderAPI;
 	private String leagName;
+	private boolean updateError = false;
+	private Color textColor, backgroundColor;
 
 	/**
 	 * Constructor of the GUILadderTracker object.
 	 */
-	public GUILadderTracker(String initialLeagName, boolean initialMode) {
+	public GUILadderTracker(String initialLeagName, boolean initialMode, Color initialTextColor, Color initialBackroundColor){
 		ladderModeCSV = initialMode;
 		leagName = initialLeagName;
 		leagName = leagName.replace(" ", "%20");
+		
+		textColor = initialTextColor;
+		backgroundColor = initialBackroundColor;
+		
 		initialize();
 	}
 	/**
@@ -57,7 +62,7 @@ public class GUILadderTracker{
 		windowLadderTracker.setBounds(100, 100, 150, windowLadderTrackerHeight);
 		windowLadderTracker.setLocation(Integer.parseInt(prefs.get("LadderTrackerLocationX", Integer.toString(dim.width/2-windowLadderTracker.getSize().width/2))), Integer.parseInt(prefs.get("LadderTrackerLocationY", Integer.toString(dim.height/2-windowLadderTracker.getSize().height/2))));
 		windowLadderTracker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowLadderTracker.setTitle("Ladder Tracker v2.1");
+		windowLadderTracker.setTitle("Ladder Tracker v2.2");
 		windowLadderTracker.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowLadderTracker.setUndecorated(true);
 		windowLadderTracker.setAlwaysOnTop(true);
@@ -73,9 +78,11 @@ public class GUILadderTracker{
    
         // rank text
         textRank = new JTextArea();
+        textRank.setForeground(textColor);
+        textRank.setBackground(backgroundColor);
+        textRank.setOpaque(true);
         textRank.setEditable(false);
-        textRank.setFont(new Font("Century Schoolbook", Font.PLAIN, 18));
-        textRank.setBackground(UIManager.getColor("Button.background"));
+        textRank.setFont(new Font("Century Schoolbook", Font.PLAIN, 18));  
         textRank.setText("");
         textRank.setBounds(0, 0, 104, 25);
         textRank.setHighlighter(null);
@@ -83,58 +90,81 @@ public class GUILadderTracker{
         
         // class text
         textClass = new JTextArea();
-        textClass.setText("");
-        textClass.setFont(new Font("Century Schoolbook", Font.PLAIN, 18));
+        textClass.setForeground(textColor);
+        textClass.setBackground(backgroundColor);
+        textClass.setOpaque(true);
         textClass.setEditable(false);
-        textClass.setBackground(SystemColor.menu);
+        textClass.setFont(new Font("Century Schoolbook", Font.PLAIN, 18));
+        textClass.setText("");
         textClass.setBounds(0, 20, 140, 24);
+        textClass.setHighlighter(null);
         windowLadderTracker.getContentPane().add(textClass);
         
         // data1 text
         textData1 = new JTextArea();
-        textData1.setText("");
+        textData1.setForeground(textColor);
+        textData1.setBackground(backgroundColor);
+        textData1.setOpaque(true);
+        textData1.setEditable(false);  
         textData1.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
-        textData1.setEditable(false);
-        textData1.setBackground(SystemColor.menu);
+        textData1.setText("");
         textData1.setBounds(0, 45, 140, 15);
         windowLadderTracker.getContentPane().add(textData1);
         
-        // data2 text
-        textData2 = new JTextArea();
-        textData2.setText("");
-        textData2.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
-        textData2.setEditable(false);
-        textData2.setBackground(SystemColor.menu);
-        textData2.setBounds(0, 57, 140, 15);
-        windowLadderTracker.getContentPane().add(textData2);
-        
         // data3 text
         textData3 = new JTextArea();
-        textData3.setText("");
-        textData3.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData3.setForeground(textColor);
+        textData3.setBackground(backgroundColor);
+        textData3.setOpaque(true);
         textData3.setEditable(false);
-        textData3.setBackground(SystemColor.menu);
+        textData3.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData3.setText("");
         textData3.setBounds(0, 69, 140, 15);
         windowLadderTracker.getContentPane().add(textData3);
         
+        // data2 text
+        textData2 = new JTextArea();
+        textData2.setForeground(textColor);
+        textData2.setBackground(backgroundColor);
+        textData2.setOpaque(true);
+        textData2.setEditable(false);
+        textData2.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData2.setText("");
+        textData2.setBounds(0, 57, 140, 15);
+        windowLadderTracker.getContentPane().add(textData2);
+        
         // data4 text
         textData4 = new JTextArea();
-        textData4.setText("");
-        textData4.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textData4.setForeground(textColor);
+        textData4.setBackground(backgroundColor);
+        textData4.setOpaque(true);
         textData4.setEditable(false);
-        textData4.setBackground(SystemColor.menu);
+        textData4.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));  
+        textData4.setText("");
         textData4.setBounds(0, 81, 140, 15);
         windowLadderTracker.getContentPane().add(textData4);
         
         // last update text
         textLastUpdate = new JTextArea();
-        textLastUpdate.setText("");
-        textLastUpdate.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textLastUpdate.setForeground(textColor);
+        textLastUpdate.setBackground(backgroundColor);
+        textLastUpdate.setOpaque(true);
         textLastUpdate.setEditable(false);
-        textLastUpdate.setBackground(SystemColor.menu);
+        textLastUpdate.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textLastUpdate.setText("");
         textLastUpdate.setBounds(100, 0, 50, 25);
         textLastUpdate.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         windowLadderTracker.getContentPane().add(textLastUpdate);
+        
+        textBackgroundColor = new JTextArea();
+        textBackgroundColor.setForeground(textColor);
+        textBackgroundColor.setBackground(backgroundColor);
+        textBackgroundColor.setOpaque(true);
+        textBackgroundColor.setEditable(false);
+        textBackgroundColor.setFont(new Font("Century Schoolbook", Font.PLAIN, 10));
+        textBackgroundColor.setText("");
+        textBackgroundColor.setBounds(0, 0, 150, 100);
+        windowLadderTracker.getContentPane().add(textBackgroundColor);
 	}
 	/**
 	 * Shows the ladder tracker window and starts the update cycle.
@@ -298,7 +328,6 @@ public class GUILadderTracker{
 										else{
 											textData1.setText("Exp/h : " + "reset" + " " + "(" + ladderAPI.getProgress() + "%)");
 										}
-										
 									}
 								}
 							}
@@ -342,7 +371,7 @@ public class GUILadderTracker{
 					}
 					
 					// ladder update 
-					while(true){			
+					while(true){	
 						try {
 							if(ladderModeCSV){
 								ladderCSV.update();
@@ -421,12 +450,12 @@ public class GUILadderTracker{
 							
 							break;
 						} catch (Exception e) {
+							updateError = true;
 							e.printStackTrace();
 						}
 					}	
 					// ladder tracker window update
-					while(true){
-						try {
+					while(true && !updateError){
 							if(ladderModeCSV){
 								if(ladderCSV.isCharacterFound()){
 									resetHeight();
@@ -585,46 +614,53 @@ public class GUILadderTracker{
 							else{
 								ladderUpdated = true;
 							}
-
-							// thread definition of timer
-							Thread ThreadCounter = new Thread(){
-								private int counter;
-								private boolean currentUpdateStatus = ladderUpdated;
-								public void run(){
-									counter = 0;
-									while(true){
-										if(ladderUpdated != currentUpdateStatus){
-											counter = 0;
-											currentUpdateStatus = ladderUpdated;
-										}
-										textLastUpdate.setText(Integer.toString(counter));
-										counter++;
-										try {
-											Thread.sleep(1000);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-									}
-								}
-							};
-							
-							if(!counterON){
-								ThreadCounter.start();
-								counterON = true;
-							}
-							
-							// resetHeight();
-							if(ladderModeCSV){
-								sleep(ladderUpdateInterval);
-							}
-							else{
-								sleep(3000);
-							}
 							break;
+					}
+					
+					// thread definition of timer
+					Thread ThreadCounter = new Thread(){
+						private int counter;
+						private boolean currentUpdateStatus = ladderUpdated;
+						public void run(){
+							counter = 0;
+							while(true){
+								if(ladderUpdated != currentUpdateStatus){
+									counter = 0;
+									currentUpdateStatus = ladderUpdated;
+								}
+								textLastUpdate.setText(Integer.toString(counter));
+								counter++;
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					};
+					
+					if(!counterON){
+						ThreadCounter.start();
+						counterON = true;
+					}
+					
+					// resetHeight();
+					if(ladderModeCSV){
+						try {
+							sleep(ladderUpdateInterval);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
+					else{
+						try {
+							sleep(3000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					updateError = false;
 				}
 			}
 		};

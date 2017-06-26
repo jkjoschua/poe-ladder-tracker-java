@@ -25,7 +25,7 @@ public class LadderCSV{
 	private String[] characterDead = new String[14000];
 	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead, characterSpecificExpPerHourReferenceLow = 0, characterSpecificExpPerHourReferenceHigh = 0;
 	private double characterSpecificProgress;
-	private boolean characterFound = false;		
+	private boolean characterFound = false, characterFoundExtern = false;		
 	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead;
 	private int httpWaitingTime = 300000;
 	private int interThreadStartTime = 1;
@@ -292,9 +292,10 @@ public class LadderCSV{
 	private void calculateCharacerSpecificData(){
 		boolean reqFound = false;
 		characterFound = false;
+		characterFoundExtern = false;
 		int ladderPos;
 		for(int i = 0; i < 14000; i++){
-			if(character.equals(characterName[i])){				
+			if(character.equals(characterName[i])){			
 				ladderPos = i;
 				characterFound = true;
 				characterSpecificRank = ladderPos+1;
@@ -372,6 +373,10 @@ public class LadderCSV{
 						}
 					}
 				}
+				if(characterFound){
+					characterFoundExtern = true;
+				}
+				
 				if(characterDead[i].equals("Dead")){
 				}
 				else{
@@ -449,7 +454,7 @@ public class LadderCSV{
 	 * @return Boolean value if the character was found.
 	 */
 	public boolean isCharacterFound(){
-		return characterFound;
+		return characterFoundExtern;
 	}
 	/**
 	 * Returns the required level to be listed in the ladder.
@@ -606,6 +611,8 @@ public class LadderCSV{
 	 * @throws Exception If there is an error while updating the ladder.
 	 */
 	public void update() throws Exception{
+		characterFound = false;
+		characterFoundExtern = false;
 		downloadCSVs();
 		fill();
 		calculateCharacerSpecificData();

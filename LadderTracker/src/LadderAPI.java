@@ -14,7 +14,7 @@ public class LadderAPI{
 	private int characterSpecificRank, characterSpecificClassRank, characterSpecificDeathsAhead, characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh, timeoutHTTPConnection = 60000;
 	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead, characterSpecificExpPerHourReferenceLow = 0, characterSpecificExpPerHourReferenceHigh = 0;
 	private double characterSpecificProgress;
-	private boolean characterFound = false;
+	private boolean characterFound = false, characterFoundExtern = false;
 	private String leagName;
 	
 	public LadderAPI(String initialCharacterName, String initialLeagName){
@@ -24,6 +24,7 @@ public class LadderAPI{
 	public void update() throws IOException, InterruptedException{
 
 		characterFound = false;
+		characterFoundExtern = false;
 		
 		LadderDownloadThread T0 = new LadderDownloadThread(0, leagName);
 		LadderDownloadThread T1 = new LadderDownloadThread(1, leagName);
@@ -238,6 +239,9 @@ public class LadderAPI{
 				}
 			}
 		}
+		if(characterFound){
+			characterFoundExtern = true;
+		}
 	}
 	public String getExpPerHour(){
 		if(characterSpecificExpPerHourReferenceLow == 0 || characterSpecificExpPerHourReferenceHigh == 0){
@@ -322,7 +326,7 @@ public class LadderAPI{
 	 * @return Boolean value if the character was found.
 	 */
 	public boolean isCharacterFound(){
-		return characterFound;
+		return characterFoundExtern;
 	}
 	/**
 	 * Returns the required level to be listed in the ladder.
