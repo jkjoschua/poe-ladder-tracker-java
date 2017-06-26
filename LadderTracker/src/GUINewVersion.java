@@ -100,7 +100,7 @@ public class GUINewVersion{
 	    }
 	}
 	public void check(){
-		if(!version.equals(latestVersion)){
+		if((Character.getNumericValue((version.charAt(0))) < Character.getNumericValue((latestVersion.charAt(0)))) || (Character.getNumericValue((version.charAt(2))) < Character.getNumericValue((latestVersion.charAt(2))))){
 			windowNewVersion.setVisible(true);
 			while(wait){}
 			windowNewVersion.dispose();
