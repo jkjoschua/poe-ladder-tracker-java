@@ -5,7 +5,7 @@ This ladder tracker is implemented in Java and it shows your current character r
 # Graphical User Interface
 
 A overview of the graphical user interface which is used to setup the ladder tracker:
-![Picture](http://fs5.directupload.net/images/170626/eronut72.png)
+![Picture](http://fs5.directupload.net/images/170628/ksdmnz6k.png)
 
 # Ladder Tracker Window
 
