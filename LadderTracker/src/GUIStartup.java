@@ -44,7 +44,7 @@ public class GUIStartup{
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private LeagueCollector leagueCollector;
 	private String[] comboBoxContent, leagueID;
-	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "v2.3";
+	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.4";
 	private Boolean prefDisplayExpBehind, prefDisplayExpAhead, prefDisplayExpPerHour, prefDisplayDeathsAhead;
 	private int prefComboBoxLeagueSelectedItem, prefComboBoxModeSelectedItem;
 
@@ -52,10 +52,23 @@ public class GUIStartup{
 	 * Constructor of the GUIStartup object.
 	 */
 	public GUIStartup(){
-		//clearPreferences();
-		checkVersion();
-		loadPreferences();
-		initialize();
+		try{
+			checkVersion();
+			loadPreferences();
+			initialize();
+		}
+		catch(Exception e1){
+			clearPreferences();
+			
+			try{
+				checkVersion();
+				loadPreferences();
+				initialize();
+			}
+			catch(Exception e2){
+				e2.printStackTrace();
+			}
+		}
 	}
 	private void checkVersion(){
 		try {
@@ -74,7 +87,7 @@ public class GUIStartup{
 		windowStartUp.setBounds(100, 100, 300, 357);
 		windowStartUp.setLocation(dim.width/2-windowStartUp.getSize().width/2, dim.height/2-windowStartUp.getSize().height/2);
 		windowStartUp.setResizable(false);
-		windowStartUp.setTitle("Ladder Tracker " + version);
+		windowStartUp.setTitle("Ladder Tracker v" + version);
 		windowStartUp.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowStartUp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowStartUp.getContentPane().setLayout(null);
@@ -118,8 +131,8 @@ public class GUIStartup{
 		
 		// text display also
 		textDisplayAlso = new JTextPane();
-		textDisplayAlso.setText("Display also:");
 		textDisplayAlso.setEditable(false);
+		textDisplayAlso.setText("Display also:");
 		textDisplayAlso.setBackground(SystemColor.menu);
 		textDisplayAlso.setBounds(10, 103, 66, 20);
 		windowStartUp.getContentPane().add(textDisplayAlso);
@@ -361,7 +374,6 @@ public class GUIStartup{
 		buttonColorReset.setBounds(10, 220, 96, 20);
 		windowStartUp.getContentPane().add(buttonColorReset);
 	}
-	@SuppressWarnings("unused")
 	private void clearPreferences(){
 		try {
 			prefs.clear();
@@ -546,8 +558,20 @@ public class GUIStartup{
 	 * @param index - Index of the selected league/race.
 	 */
 	private void updateDates(){
-		String start = leagueCollector.getLeagueStart().get(prefComboBoxLeagueSelectedItem);
-		String end = leagueCollector.getLeagueEnd().get(prefComboBoxLeagueSelectedItem);
+
+		String start, end;
+		
+		try{
+			start = leagueCollector.getLeagueStart().get(prefComboBoxLeagueSelectedItem);
+			end = leagueCollector.getLeagueEnd().get(prefComboBoxLeagueSelectedItem);
+		}
+		catch(Exception e){
+			start = leagueCollector.getLeagueStart().get(0);
+			end = leagueCollector.getLeagueEnd().get(0);
+			prefs.put("LeagueNameListIndex", Integer.toString(0));
+			prefComboBoxLeagueSelectedItem = 0;
+		}
+
 		textStartLeague.setText(start);
 		textEndLeague.setText(end);
 	}

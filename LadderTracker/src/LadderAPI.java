@@ -11,11 +11,12 @@ import java.util.Date;
 public class LadderAPI{
 	private String[] characterRank = new String[14000], characterName = new String[14000], characterClass = new String[14000], characterExperience = new String[14000], characterDead = new String[14000], characterLevel = new String[14000];
 	private String character, characterSpecificClass, reqLevel, reqExp;
-	private int characterSpecificRank = 99999, characterSpecificClassRank, characterSpecificDeathsAhead, characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh, timeoutHTTPConnection = 60000;
+	private int characterSpecificClassRank, characterSpecificDeathsAhead, characterSpecificExpPerHourTimestampLow, characterSpecificExpPerHourTimestampHigh, timeoutHTTPConnection = 60000;
 	private long characterSpecificExperienceBehind, characterSpecificExperienceAhead, characterSpecificExpPerHourReferenceLow = 0, characterSpecificExpPerHourReferenceHigh = 0;
 	private double characterSpecificProgress;
 	private boolean characterFound = false, characterFoundExtern = false;
 	private String leagName;
+	private int characterSpecificRank = 99999;
 	
 	public LadderAPI(String initialCharacterName, String initialLeagName){
 		leagName = initialLeagName;
@@ -44,6 +45,10 @@ public class LadderAPI{
 		T2.join();
 		T3.join();
 		T4.join();
+		
+//		if(characterFound){
+//			searchCharacter(character, 0, characterSpecificRank-1);
+//		}
 		
 		calculateCharacerSpecificData();
 	}

@@ -37,6 +37,7 @@ public class GUILadderTracker{
 	private String leagName;
 	private boolean updateError = false;
 	private Color textColor, backgroundColor;
+	private String version = "2.4";
 
 	/**
 	 * Constructor of the GUILadderTracker object.
@@ -62,7 +63,7 @@ public class GUILadderTracker{
 		windowLadderTracker.setBounds(100, 100, 150, windowLadderTrackerHeight);
 		windowLadderTracker.setLocation(Integer.parseInt(prefs.get("LadderTrackerLocationX", Integer.toString(dim.width/2-windowLadderTracker.getSize().width/2))), Integer.parseInt(prefs.get("LadderTrackerLocationY", Integer.toString(dim.height/2-windowLadderTracker.getSize().height/2))));
 		windowLadderTracker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		windowLadderTracker.setTitle("Ladder Tracker v2.3");
+		windowLadderTracker.setTitle("Ladder Tracker v" + version);
 		windowLadderTracker.setIconImage(new ImageIcon(getClass().getResource("icon.png")).getImage());
 		windowLadderTracker.setUndecorated(true);
 		windowLadderTracker.setAlwaysOnTop(true);
