@@ -37,7 +37,7 @@ public class GUILadderTracker{
 	private String leagName;
 	private boolean updateError = false;
 	private Color textColor, backgroundColor;
-	private String version = "2.4";
+	private String version = "2.5";
 
 	/**
 	 * Constructor of the GUILadderTracker object.

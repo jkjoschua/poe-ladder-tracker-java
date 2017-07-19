@@ -19,7 +19,7 @@ public class GUIError{
 	private volatile boolean buttonPressed = false;
 	private ButtonRetryListener buttonRetryListener = new ButtonRetryListener();
 	private String errorMessage = "Error! Path of Exile's API is not responding! Servers are probably down! Check www.pathofexile.com";
-	private String version = "2.4";
+	private String version = "2.5";
 	
 	/**
 	 * Constructor for the GUIError object.

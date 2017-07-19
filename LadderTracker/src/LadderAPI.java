@@ -359,6 +359,7 @@ public class LadderAPI{
 	private class LadderDownloadThread extends Thread implements Runnable{
 		private int offset;
 		private String league;
+		private final String USER_AGENT = "Mozilla/5.0";
 		
 		public LadderDownloadThread(int startOffset, String startleague){
 			offset = startOffset;
@@ -384,8 +385,10 @@ public class LadderAPI{
 					api = "http://api.pathofexile.com/ladders?id=" + league + "&offset=" + Integer.toString(200*x) + "&limit=200";
 					try {
 						apiURL = new URL(api);
-						connection = (HttpURLConnection) apiURL.openConnection();
-						connection.setConnectTimeout(timeoutHTTPConnection);
+						connection = (HttpURLConnection) apiURL.openConnection();	
+						connection.setRequestProperty("User-Agent", USER_AGENT);
+						connection.getResponseCode();
+						connection.setConnectTimeout(timeoutHTTPConnection);	
 						inputStream = connection.getInputStream();
 						inputStreamReader = null;
 					    bufferedReader = null;
@@ -410,7 +413,7 @@ public class LadderAPI{
 							Thread.sleep(1000-diff);
 						}
 						
-					} catch (IOException | InterruptedException e) {
+					} catch (Exception e) {
 						done = false;
 						e.printStackTrace();
 					}

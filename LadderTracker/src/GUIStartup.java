@@ -44,7 +44,7 @@ public class GUIStartup{
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private LeagueCollector leagueCollector;
 	private String[] comboBoxContent, leagueID;
-	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.4";
+	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.5";
 	private Boolean prefDisplayExpBehind, prefDisplayExpAhead, prefDisplayExpPerHour, prefDisplayDeathsAhead;
 	private int prefComboBoxLeagueSelectedItem, prefComboBoxModeSelectedItem;
 
@@ -477,12 +477,10 @@ public class GUIStartup{
 					comboBoxLeague.setSelectedItem(comboBoxContent[prefComboBoxLeagueSelectedItem]);
 				}
 				else{
-					System.out.println("da");
 					selectedLeagueID = leagueID[0];
 					comboBoxLeague.setSelectedItem(comboBoxContent[0]);
 				}
 				updateStartButton();
-				
 				
 				comboBoxLeague.addItemListener(comboBoxListener);
 				break;

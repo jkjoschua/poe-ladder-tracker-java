@@ -22,6 +22,7 @@ public class CSVFile{
 	private String[] listLevel = new String[2000];
 	private String[] listExperience = new String[2000];
 	private String[] listDead = new String[2000];
+	private final String USER_AGENT = "Mozilla/5.0";
 	
 	/**
 	 * Constructor of the CSVFile object.
@@ -40,6 +41,8 @@ public class CSVFile{
 	 */
 	private void download() throws Exception{
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("User-Agent", USER_AGENT);
+		connection.getResponseCode();
 		connection.setConnectTimeout(60000);
 		
 		InputStream inputStream = connection.getInputStream();
