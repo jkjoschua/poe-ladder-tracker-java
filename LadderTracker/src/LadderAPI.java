@@ -29,22 +29,27 @@ public class LadderAPI{
 		characterSpecificRank = 99999;
 		
 		LadderDownloadThread T0 = new LadderDownloadThread(0, leagName);
-		LadderDownloadThread T1 = new LadderDownloadThread(1, leagName);
-		LadderDownloadThread T2 = new LadderDownloadThread(2, leagName);
-		LadderDownloadThread T3 = new LadderDownloadThread(3, leagName);
-		LadderDownloadThread T4 = new LadderDownloadThread(4, leagName);
+//		LadderDownloadThread T1 = new LadderDownloadThread(1, leagName);
+//		LadderDownloadThread T2 = new LadderDownloadThread(2, leagName);
+//		LadderDownloadThread T3 = new LadderDownloadThread(3, leagName);
+//		LadderDownloadThread T4 = new LadderDownloadThread(4, leagName);
 		
+		Thread.sleep(3000);
 		T0.start();
-		T1.start();
-		T2.start();
-		T3.start();
-		T4.start();		
+//		Thread.sleep(5000);
+//		T1.start();
+//		Thread.sleep(5000);
+//		T2.start();
+//		Thread.sleep(5000);
+//		T3.start();
+//		Thread.sleep(5000);
+//		T4.start();
 		
 		T0.join();
-		T1.join();
-		T2.join();
-		T3.join();
-		T4.join();
+//		T1.join();
+//		T2.join();
+//		T3.join();
+//		T4.join();
 		
 //		if(characterFound){
 //			searchCharacter(character, 0, characterSpecificRank-1);
@@ -376,7 +381,7 @@ public class LadderAPI{
 			String api, line, currentSection;
 			boolean done = false;
 			
-			for(int x = offset; x < 70; x = x+5){
+			for(int x = offset; x < 70; x = x+1){
 				done = false;
 						
 				while(!done){
@@ -408,9 +413,9 @@ public class LadderAPI{
 						end = (int) new Date().getTime();
 						diff = end-start;
 						
-						if(diff < 1000){
+						if(diff < 3000){
 							done = true;
-							Thread.sleep(1000-diff);
+							Thread.sleep(3000-diff);
 						}
 						
 					} catch (Exception e) {
@@ -419,7 +424,7 @@ public class LadderAPI{
 					}
 					if(!done){
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(3000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}

@@ -5,22 +5,28 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.awt.event.ActionEvent;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
 import javax.swing.JCheckBox;
 
 /**
@@ -44,7 +50,7 @@ public class GUIStartup{
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private LeagueCollector leagueCollector;
 	private String[] comboBoxContent, leagueID;
-	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.5";
+	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.6";
 	private Boolean prefDisplayExpBehind, prefDisplayExpAhead, prefDisplayExpPerHour, prefDisplayDeathsAhead;
 	private int prefComboBoxLeagueSelectedItem, prefComboBoxModeSelectedItem;
 
@@ -485,6 +491,11 @@ public class GUIStartup{
 				comboBoxLeague.addItemListener(comboBoxListener);
 				break;
 			} catch (Exception e) {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 				e.printStackTrace();
 				System.out.println("Error! - Unable to collect all leagues and races! (" + counter+1 + " tries)");
 			}
@@ -496,11 +507,11 @@ public class GUIStartup{
 				windowsError.show();
 			}
 			else{
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+//				try {
+//					Thread.sleep(500);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
 			}
 		}
 	}

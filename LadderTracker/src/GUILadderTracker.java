@@ -3,13 +3,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.prefs.Preferences;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+
 import java.awt.Font;
 import java.awt.Toolkit;
+
 import javax.swing.JLabel;
+
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Color;
@@ -37,7 +41,7 @@ public class GUILadderTracker{
 	private String leagName;
 	private boolean updateError = false;
 	private Color textColor, backgroundColor;
-	private String version = "2.5";
+	private String version = "2.6";
 
 	/**
 	 * Constructor of the GUILadderTracker object.
@@ -451,6 +455,11 @@ public class GUILadderTracker{
 							
 							break;
 						} catch (Exception e) {
+							try {
+								Thread.sleep(3000);
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
 							updateError = true;
 							e.printStackTrace();
 						}
