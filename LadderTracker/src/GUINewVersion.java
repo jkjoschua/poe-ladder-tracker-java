@@ -21,7 +21,7 @@ public class GUINewVersion{
 	private URL githubURL;
 	private String githubVersionLink = "https://raw.githubusercontent.com/jkjoschua/poe-ladder-tracker-java/master/VERSION";
 	private String githubReleasesLink = "https://github.com/jkjoschua/poe-ladder-tracker-java/releases";
-	private String version = "2.6", latestVersion;
+	private String version = "2.7", latestVersion;
 	private volatile boolean wait = true;
 
 	public GUINewVersion() throws Exception{

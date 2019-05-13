@@ -50,7 +50,7 @@ public class GUIStartup{
 	private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private LeagueCollector leagueCollector;
 	private String[] comboBoxContent, leagueID;
-	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.6";
+	private String selectedLeagueID, prefCharacterName, prefTextColorR, prefTextColorG, prefTextColorB, prefBackgroundColorR, prefBackgroundColorG, prefBackgroundColorB, version = "2.7";
 	private Boolean prefDisplayExpBehind, prefDisplayExpAhead, prefDisplayExpPerHour, prefDisplayDeathsAhead;
 	private int prefComboBoxLeagueSelectedItem, prefComboBoxModeSelectedItem;
 

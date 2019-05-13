@@ -11,6 +11,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
 /**
  * The LeagueCollector object is used to get all leagues and races that are currently of interest.
  * 
@@ -33,9 +38,8 @@ public class LeagueCollector{
 		Thread.sleep(3000);
 		apiURL = new URL("http://api.pathofexile.com/leagues?type=main&compact=0");
 		download();
-		//json = "[{\"id\":\"Standard\",\"description\":\"The default game mode.\",\"registerAt\":null,\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/71278\",\"startAt\":\"2013-01-23T21:00:00Z\",\"endAt\":null,\"rules\":[]},{\"id\":\"Hardcore\",\"description\":\"A character killed in the Hardcore league is moved to the Standard league.\",\"registerAt\":null,\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/71276\",\"startAt\":\"2013-01-23T21:00:00Z\",\"endAt\":null,\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"}]},{\"id\":\"SSF Standard\",\"description\":\"SSF Standard\",\"registerAt\":null,\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841357\",\"startAt\":\"2013-01-23T21:00:00Z\",\"endAt\":null,\"rules\":[{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"SSF Hardcore\",\"description\":\"SSF Hardcore\",\"registerAt\":null,\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841353\",\"startAt\":\"2013-01-23T21:00:00Z\",\"endAt\":null,\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"},{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"Legacy\",\"description\":\"Find valuable items from Path of Exile's past as you combine three of the seventeen previous Challenge Leagues together.\\n\\nThis is the default Path of Exile league.\",\"registerAt\":\"2017-03-03T17:00:00Z\",\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841349\",\"startAt\":\"2017-03-03T20:00:00Z\",\"endAt\":\"2017-07-10T22:00:00Z\",\"rules\":[]},{\"id\":\"Hardcore Legacy\",\"description\":\"Find valuable items from Path of Exile's past as you combine three of the seventeen previous Challenge Leagues together.\\n\\nA character killed in Hardcore Legacy becomes a Standard character.\",\"registerAt\":\"2017-03-03T17:00:00Z\",\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841345\",\"startAt\":\"2017-03-03T20:00:00Z\",\"endAt\":\"2017-07-10T22:00:00Z\",\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"}]},{\"id\":\"SSF Legacy\",\"description\":\"SSF Legacy\",\"registerAt\":\"2017-03-03T17:00:00Z\",\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841364\",\"startAt\":\"2017-03-03T20:00:00Z\",\"endAt\":\"2017-07-10T22:00:00Z\",\"rules\":[{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"SSF HC Legacy\",\"description\":\"SSF HC Legacy\",\"registerAt\":\"2017-03-03T17:00:00Z\",\"event\":false,\"url\":\"http:\\/\\/pathofexile.com\\/forum\\/view-thread\\/1841361\",\"startAt\":\"2017-03-03T20:00:00Z\",\"endAt\":\"2017-07-10T22:00:00Z\",\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"},{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"Headhunter (JRE001)\",\"description\":\"Please check the Event Forums for more details.\",\"registerAt\":\"2017-06-02T15:30:00Z\",\"event\":true,\"url\":null,\"startAt\":\"2017-06-02T16:00:00Z\",\"endAt\":\"2017-06-02T17:00:00Z\",\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"},{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"Descent Champions (JRE002)\",\"description\":\"Please check the Event Forums for more details.\",\"registerAt\":\"2017-06-02T18:30:00Z\",\"event\":true,\"url\":null,\"startAt\":\"2017-06-02T19:00:00Z\",\"endAt\":\"2017-06-02T19:30:00Z\",\"rules\":[{\"id\":4,\"name\":\"Hardcore\",\"description\":\"A character killed in Hardcore is moved to its parent league.\"},{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]},{\"id\":\"Cutthroat (JRE003)\",\"description\":\"Please check the Event Forums for more details.\",\"registerAt\":\"2017-06-02T21:30:00Z\",\"event\":true,\"url\":null,\"startAt\":\"2017-06-02T22:00:00Z\",\"endAt\":\"2017-06-02T23:00:00Z\",\"rules\":[{\"id\":6,\"name\":\"Drop equipped items on death\",\"description\":\"Items are dropped on death.\"},{\"id\":7,\"name\":\"Instance invasion\",\"description\":\"Allows you to select other people's instances in the instance manager.\"},{\"id\":8,\"name\":\"Harsh death experience penalty\",\"description\":\"Increases the death experience penalty by 30% on all difficulty levels.\"},{\"id\":10,\"name\":\"Hostile by default\",\"description\":\"Non-partymembers are hostile by default when you are not partied.\"},{\"id\":11,\"name\":\"Death penalty awarded to slayer\",\"description\":\"When killing a player, their death penalty is awarded to the player doing the killing.\"},{\"id\":12,\"name\":\"Increased player caps\",\"description\":\"Doubles player capacity in non-town instances. Does not increase the party size.\"},{\"id\":24,\"name\":\"Solo\",\"description\":\"You may not party in this league.\"}]}]";
-		//json = "asd";
-		analyze();
+		//analyze();
+		analyzeNEW();
 		convertDates();
 	}
 	/**
@@ -44,7 +48,8 @@ public class LeagueCollector{
 	 * @throws Exception If there is an error while downloading.
 	 */
 	private void download() throws Exception{
-		HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();		
+		HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 		InputStream inputStream = connection.getInputStream();
 		
 		InputStreamReader inputStreamReader = null;
@@ -58,13 +63,38 @@ public class LeagueCollector{
 	    	json = line;
 	    }
 	    
+	    System.out.println(json);
+	    
 	    inputStreamReader.close();
 		bufferedReader.close();
 		inputStream.close();
 	}
 	/**
 	 * Analyzes the JSON file and imports specific data.
+	 * @throws JSONException 
 	 */
+	private void analyzeNEW() throws JSONException{
+		JSONArray a = new JSONArray(json);
+		
+		for (int i = 0; i < a.length(); i++) {
+			JSONObject tmp = (JSONObject) a.get(i);
+			leagueNameList.add(tmp.getString("id"));	
+			
+			String url = tmp.getString("url");
+			
+			if(!url.equals("null")){
+				url = url.replace("\"", "");
+				leagueThreadID.add(generateThreadID(url));
+			}
+			else{
+				leagueThreadID.add(url);
+			}
+			
+			leagueStart.add(tmp.getString("startAt"));
+			leagueEnd.add(tmp.getString("endAt"));	
+		}
+		
+    }
 	private void analyze(){
 		int c = 0, e = 0;
 		boolean searchID = true, searchURL = false, searchStartAt = false, searchEndAt = false;
